@@ -9,7 +9,7 @@ makes a copy of it somebody else's site in one landing.**
 
 | | |
 |---|---|
-| Status | In progress — SF0 on main |
+| Status | In progress — SF1 on main: the site runs on Workers |
 | Upstream | [mearashadowfax/ScrewFast](https://github.com/mearashadowfax/ScrewFast) (MIT), at `86b25a9` (2026-10-27; the repository has no release tags) |
 | Reference | [astro-boilerplate](https://github.com/sourceplane/astro-boilerplate) — the same scaffolding, tests and bootstrap; [astro-paper](https://github.com/sourceplane/astro-paper) and [astrowind](https://github.com/sourceplane/astrowind) — the same static build behind one Worker |
 | Key | `SF` |

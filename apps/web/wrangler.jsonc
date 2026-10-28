@@ -1,0 +1,23 @@
+// The Worker and the static assets `astro build` emits. The site is fully
+// static, so every page, product, post, insight, docs page (Starlight, in
+// seven languages), image, sitemap and the web app manifest is a file in
+// dist/ served without reaching the Worker; a request matching no file is
+// handed to the Worker (worker/index.ts), which answers with the site's own
+// 404 page — the French one under /fr/, as the template's Vercel rewrite did.
+// `auto-trailing-slash`: Astro writes each page as <path>/index.html, which
+// is served at <path>/, and <path> redirects there. The template's security
+// headers are public/_headers.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "screwfast-web",
+  "main": "./worker/index.ts",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+  },
+  "observability": { "enabled": true },
+}
