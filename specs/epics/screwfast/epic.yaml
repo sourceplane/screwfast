@@ -1,0 +1,31 @@
+# The epic's declaration. metadata.name equals the directory name; metadata.key
+# is the task-key prefix this epic reserves (SF → SF-1, SF-2, …). Owner, target
+# date and health are the platform's — never written here.
+apiVersion: orun.io/v1
+kind: Epic
+metadata:
+  name: screwfast
+  key: SF
+spec:
+  title: "Vercel's ScrewFast template on Cloudflare Workers"
+  summary: "ScrewFast — an Astro, Tailwind CSS and Preline UI marketing site (home, products, services, pricing, FAQ, contact, a blog and customer insights, in English and French) with a Starlight documentation section in seven languages and its search — builds fully static and is served as Cloudflare Workers Static Assets behind one small Worker, inside the Cirrus baseline's repository conventions, and becomes an Orun baseline that takes a new site from nothing to live on stage and prod in one landing."
+  state: started
+  milestones:
+    - name: "SF0 — the spec"
+      exitCriteria:
+        - "the repository is born with its intent, CI, tooling and spec index, and this doc set and the task contracts are on main"
+      tasks: [SF-1]
+    - name: "SF1 — the site on Workers"
+      exitCriteria:
+        - "apps/web is the upstream template, built static with its docs and their search index, with one Worker in front of dist/ as Workers Static Assets that serves the French 404 page under /fr/"
+        - "the site's name is one seam that the copy, the data, the logos, the manifest and the docs' title read"
+        - "`pnpm typecheck`, `pnpm lint`, `pnpm test` and `pnpm build` are green"
+        - "`wrangler dev` serves every marketing page in both languages, the docs in all seven, the search index, the security headers, directory URLs and both 404 pages"
+        - "the README says how to run, test, preview and deploy it, and how every Vercel piece maps to Cloudflare"
+      tasks: [SF-2]
+    - name: "SF2 — a baseline"
+      exitCriteria:
+        - "blueprint.yaml (the console card) and repo-blueprint.yaml (the build) take a new site from nothing to live on stage and prod in one landing, then record it"
+        - "a site built from it carries the site only, renamed throughout to its own name, repository and Worker, with the template's credit and demo content intact"
+        - "Baseline CI is green: contract tests, generated component docs, the blueprint read by the pinned orun, the leak gate, the offline bootstrap and the end-to-end tier"
+      tasks: [SF-3]
