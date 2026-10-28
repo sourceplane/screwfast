@@ -1,0 +1,94 @@
+apiVersion: sourceplane.io/v1
+kind: Component
+metadata:
+  name: web
+  description: The site (a static Astro + Tailwind CSS marketing site with a Starlight docs section, in English and French, on Cloudflare Workers + Static Assets, per environment)
+spec:
+  type: cloudflare-workers-assets-turbo
+  lifecycle: production
+  owner: platform
+  # Its pages, attached to it in the workspace's catalog: what the Docs
+  # library shows for it, and what the catalog's docs and runbook checks read.
+  # Generated from what this manifest and its sources declare.
+  docs:
+    overview: docs/overview.md
+    pages:
+      - { path: docs/architecture.md, role: architecture, title: Architecture }
+      - { path: docs/runbook.md, role: runbook, title: Runbook }
+  # `app`, not `web`: a domain and a component share one name space in the
+  # catalog, and a domain called `web` hid this component from it.
+  domain: app
+  path: apps/web
+  # Its own lane per environment: the site's build is the longest job in the
+  # plan, and a shared lane would wait on it.
+  lane: isolated
+  subscribe:
+    environments:
+      - name: dev
+        profile: verify
+      - name: stage
+        profile: verify
+        profileRules:
+          - profile: deploy
+            when:
+              triggerRef: github-push-main
+      - name: prod
+        profile: verify
+        profileRules:
+          - profile: deploy
+            when:
+              triggerRef: github-push-main
+  parameters:
+    nodeVersion: "22"
+    pnpmVersion: "10.12.1"
+
+    workspaceDir: ../..
+    appDir: .
+
+    turboFilter: "@app/web"
+    # The config the dry run and the deploy hand to wrangler: the Worker
+    # (worker/index.ts) and the static build in dist/ as its assets.
+    # The site builds fully static, so there is no adapter and no generated
+    # config — this committed file is the one wrangler deploys.
+    wranglerConfig: wrangler.jsonc
+
+    # `astro build` (output: 'static') writes every marketing page (English
+    # and French), product, post, insight and docs page (Starlight, seven
+    # languages) to dist/, Starlight's Pagefind its docs search index to
+    # dist/pagefind, and process-html.mjs minifies the pages in place. The
+    # Worker is a source file wrangler bundles at deploy; the lane checks it
+    # exists after the build like any entry.
+    workerEntrypoint: worker/index.ts
+    assetsDir: dist
+
+    # Per-env worker name: screwfast-web-{dev,stage,prod}.
+    workerName: screwfast-web
+    environmentAwareWorkerName: true
+
+    # The account's workers.dev subdomain; exported to the smoke step as
+    # ${WORKERS_DEV_SUBDOMAIN} and used to build ${DEPLOYED_URL}.
+    workersDevSubdomain: your-workers-subdomain
+
+    installCommand: pnpm install --frozen-lockfile
+    # The site's public origin (canonical, hreflang and Open Graph links, the
+    # sitemap and robots.txt are absolute): the environment's SITE_URL when
+    # intent.yaml sets one (a custom domain), else its workers.dev URL. The
+    # subdomain is written out rather than read from ${WORKERS_DEV_SUBDOMAIN},
+    # which the composition exports to the smoke step only.
+    # ${ORUN_ENVIRONMENT} the runner sets for every step. astro.config.mjs
+    # reads PUBLIC_SITE_URL as its `site`.
+    buildCommand: PUBLIC_SITE_URL="${SITE_URL:-https://screwfast-web-${ORUN_ENVIRONMENT}.your-workers-subdomain.workers.dev}" pnpm exec turbo run build --filter=@app/web
+
+    # Smoke: the home page links its French version (hreflang), the products
+    # index lists the template's first product, the docs' welcome page and
+    # their search index are served, an unknown path answers the site's own
+    # 404 page with a 404 status, and one under /fr/ the French 404 page
+    # (lang="fr") with a 404 status (the Worker). `-L` follows the directory
+    # redirect (/products → /products/). Each response is buffered before grep
+    # so an early match cannot SIGPIPE curl.
+    smokeCommand: "html=$(curl -sfL \"${DEPLOYED_URL}/\") && echo \"${html}\" | grep -q 'hreflang=\"fr\"' && products=$(curl -sfL \"${DEPLOYED_URL}/products\") && echo \"${products}\" | grep -q '/products/item-a765/' && curl -sfL -o /dev/null \"${DEPLOYED_URL}/welcome-to-docs/\" && curl -sf -o /dev/null \"${DEPLOYED_URL}/pagefind/pagefind.js\" && test \"$(curl -s -o /dev/null -w '%{http_code}' \"${DEPLOYED_URL}/no-such-page\")\" = 404 && test \"$(curl -s -o /dev/null -w '%{http_code}' \"${DEPLOYED_URL}/fr/no-such-page\")\" = 404 && fr=$(curl -s \"${DEPLOYED_URL}/fr/no-such-page\") && echo \"${fr}\" | grep -q '<html lang=\"fr\"'"
+  labels:
+    team: platform
+    layer: delivery
+    surface: web
+    runtime: cloudflare

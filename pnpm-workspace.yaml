@@ -11,3 +11,11 @@ onlyBuiltDependencies:
   - esbuild
   - workerd
   - sharp
+
+
+# Astro 7.4 and @astrojs/mdx 8.1.1 need Node 22.23.4, and the runners' Node 22
+# is sometimes 22.23.3: Astro is held at 7.3.8 and MDX (which Starlight pulls
+# in too) at 8.1.0, the newest each Node 22.23.3 can run.
+overrides:
+  astro: "7.3.8"
+  "@astrojs/mdx": "8.1.0"
