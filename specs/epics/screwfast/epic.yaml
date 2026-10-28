@@ -9,7 +9,7 @@ metadata:
 spec:
   title: "Vercel's ScrewFast template on Cloudflare Workers"
   summary: "ScrewFast — an Astro, Tailwind CSS and Preline UI marketing site (home, products, services, pricing, FAQ, contact, a blog and customer insights, in English and French) with a Starlight documentation section in seven languages and its search — builds fully static and is served as Cloudflare Workers Static Assets behind one small Worker, inside the Cirrus baseline's repository conventions, and becomes an Orun baseline that takes a new site from nothing to live on stage and prod in one landing."
-  state: started
+  state: completed
   milestones:
     - name: "SF0 — the spec"
       exitCriteria:
