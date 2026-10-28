@@ -4,7 +4,7 @@
 |---|---|---|
 | SF0 — the spec | ✅ | the repository's first commit |
 | SF1 — the site on Workers | ✅ | SF-2 |
-| SF2 — a baseline | planned | SF-3 |
+| SF2 — a baseline | ✅ | SF-3, tagged `baseline-v1` |
 
 ## Departures from the upstream template
 
