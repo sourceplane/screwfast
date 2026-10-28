@@ -1,0 +1,17 @@
+apiVersion: orun.io/v1
+kind: TaskContract
+metadata:
+  name: SF-2
+  title: "The site on Workers"
+spec:
+  goal: ScrewFast runs on Cloudflare Workers + Static Assets — built static with its docs and their search index, served as assets behind one Worker that answers the French 404 page under /fr/, its name one seam the copy reads — with its README saying how it maps to Vercel
+  affects:
+    - apps/web
+    - pnpm-lock.yaml
+    - pnpm-workspace.yaml
+    - README.md
+    - .gitignore
+  doneWhen:
+    - pnpm typecheck, lint, test and build are green
+    - wrangler dev serves every marketing page in both languages, the docs in all seven, the search index, the headers and both 404 pages
+  gates: []
