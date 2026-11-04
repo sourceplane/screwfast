@@ -38,6 +38,26 @@ spec:
           - profile: deploy
             when:
               triggerRef: github-push-main
+  # How the site runs itself for orun.work's live Preview tab
+  # (saas-parallel-baselining PB4): `orun preview` starts this, and a coding
+  # session keeps it running while it works, so the person watches it change
+  # as it is built. The dev server binds the box's loopback only, on a fixed
+  # port, and installs first, so a checkout the session has not installed yet
+  # still comes up.
+  # --ignore-lock keeps astro dev in the foreground, where orun can follow and
+  # stop it: Astro 7 otherwise detaches itself into a background server when
+  # it detects an AI agent. orun refuses to start the preview if the port is
+  # taken, so it fails rather than moving to another port.
+  preview:
+    run:
+      - sh
+      - -c
+      - pnpm install --frozen-lockfile --prefer-offline --filter "@app/web..." && exec node_modules/.bin/astro dev --host 127.0.0.1 --port 4321 --ignore-lock
+    port: 4321
+    path: /
+    env:
+      NODE_OPTIONS: --max-old-space-size=512
+      ASTRO_TELEMETRY_DISABLED: "1"
   parameters:
     nodeVersion: "22"
     pnpmVersion: "10.12.1"
