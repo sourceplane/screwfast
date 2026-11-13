@@ -23,7 +23,7 @@ After a deploy the lane runs this smoke against the environment it
 deployed (`ORUN_ENVIRONMENT`); `DEPLOYED_URL` overrides the URL:
 
 ```bash
-html=$(curl -sfL "${DEPLOYED_URL}/") && echo "${html}" | grep -q 'hreflang="fr"' && products=$(curl -sfL "${DEPLOYED_URL}/products") && echo "${products}" | grep -q '/products/item-a765/' && curl -sfL -o /dev/null "${DEPLOYED_URL}/welcome-to-docs/" && curl -sf -o /dev/null "${DEPLOYED_URL}/pagefind/pagefind.js" && test "$(curl -s -o /dev/null -w '%{http_code}' "${DEPLOYED_URL}/no-such-page")" = 404 && test "$(curl -s -o /dev/null -w '%{http_code}' "${DEPLOYED_URL}/fr/no-such-page")" = 404 && fr=$(curl -s "${DEPLOYED_URL}/fr/no-such-page") && echo "${fr}" | grep -q '<html lang="fr"'
+html=$(curl -sfL "${DEPLOYED_URL}/") && grep -q 'hreflang="fr"' <<< "${html}" && products=$(curl -sfL "${DEPLOYED_URL}/products") && grep -q '/products/item-a765/' <<< "${products}" && curl -sfL -o /dev/null "${DEPLOYED_URL}/welcome-to-docs/" && curl -sf -o /dev/null "${DEPLOYED_URL}/pagefind/pagefind.js" && test "$(curl -s -o /dev/null -w '%{http_code}' "${DEPLOYED_URL}/no-such-page")" = 404 && test "$(curl -s -o /dev/null -w '%{http_code}' "${DEPLOYED_URL}/fr/no-such-page")" = 404 && fr=$(curl -s "${DEPLOYED_URL}/fr/no-such-page") && grep -q '<html lang="fr"' <<< "${fr}"
 ```
 
 ## Rollback

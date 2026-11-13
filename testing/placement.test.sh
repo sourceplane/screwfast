@@ -256,6 +256,8 @@ for (comp, env), j in jobs.items():
             or "/welcome-to-docs/" not in smoke or "/pagefind/pagefind.js" not in smoke
             or "/fr/no-such-page" not in smoke or "<html lang=" not in smoke):
         bad(f"{comp}@{env}'s smoke is not the site's")
+    if "| grep -q" in smoke:
+        bad(f"{comp}@{env}'s smoke pipes into grep -q — under pipefail a page over 64 KiB fails it with SIGPIPE; use a here-string")
     if f'export WORKERS_DEV_SUBDOMAIN="{sub}"' not in steps.get("smoke", ""):
         bad(f"{comp}@{env}'s smoke probes another workers.dev subdomain")
     refs = {r["asEnv"]: r["ref"] for r in j.get("secretRefs") or []}
